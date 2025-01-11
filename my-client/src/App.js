@@ -1,34 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, X, User } from 'lucide-react';
 
 const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [products, setProducts] = useState([]);
   
   // Sample product data (in real app, this would come from an API)
-  const products = [
-    {
-      id: 1,
-      name: "Classic T-Shirt",
-      price: 29.99,
-      description: "Comfortable cotton t-shirt",
-      image: "/api/placeholder/200/200"
-    },
-    {
-      id: 2,
-      name: "Denim Jeans",
-      price: 79.99,
-      description: "Classic blue denim jeans",
-      image: "/api/placeholder/200/200"
-    },
-    {
-      id: 3,
-      name: "Sneakers",
-      price: 99.99,
-      description: "Casual everyday sneakers",
-      image: "/api/placeholder/200/200"
-    }
-  ];
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:8080/get/item');
+  //       const result = await response.json();
+  //       setProducts(result);
+  //       // console.log(products);
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // });
+
+  useEffect(() => {
+    // GET request using fetch inside useEffect React hook
+    fetch('http://localhost:8080/get/item')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data); // Log the data received from the server
+            setProducts(data.total); // Set the 'total' field from the response to state
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+
+    // Empty dependency array means this effect will only run once (like componentDidMount in classes)
+}, []);
+
 
   const addToCart = (product) => {
     setCartItems(prevItems => {
